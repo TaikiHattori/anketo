@@ -10,4 +10,5 @@ PHPのデータ送信、受取、表示の流れを意識しながら作った�
 小さい機能を積み重ねる意識の向上。PHPが好きかはまだ分からないが、とにかく練習あるのみだと思った。
 
 http://localhost/G'sPHP%E8%AC%9B%E7%BE%A9/06_php01_sample/work_anketo_input.php
+
 http://localhost/G'sPHP講義/06_php01_sample/work_anketo_input.php
