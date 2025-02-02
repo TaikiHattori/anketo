@@ -1,68 +1,51 @@
 <?php
-$str = "";
-// ↑1.文字列に追加ver.
-$array = [];
-// ↑2.配列に追加ver.
 
-// ↓以下はほぼ毎回同じ
-// ファイルを開く
-$file = fopen("data/work_anketo_todo.txt", "r");
-// rは という意味
+// --------------------------
+// 講義
+// --------------------------
+// 1.文字列に追加ver.
+// $str = "";
 
-// ファイルをロックする。他人に編集されないように
-flock($file, LOCK_EX);
-// ↑LOCK_EXが白色で反応してないように見えるが反応してる
+// // 2.配列に追加ver.
+// $array = [];
 
-// ファイルからデータを取り出す！！
-if ($file) {
-    while ($line = fgets($file)) {
-        // 文字列に追加ver.
-        // .=はJSでいう+= 一個ずつ足していくという意味
-        $str .= "<tr><td>{$line}</td></tr>";
+// // ↓以下ほぼ毎回同じ
 
-        // 配列に追加ver.
-        $array[] = "<tr><td>{$line}</td></tr>";
+// // ファイルを開く
+// $file = fopen("data/work_anketo_todo.txt", "r");
 
+// // ファイルをロックする。他人に編集されないように
+// flock($file, LOCK_EX);
 
-        // $array[] = [
-        //     "janru" => explode("", $line)[1],
-        //     "tanjo" => explode("", $line)[0],
-        // ];
-    }
-}
+// // ファイルからデータを取り出す
+// if ($file) {
+//     while ($line = fgets($file)) {
+//         // 文字列に追加ver.（作りたいものによってここに変化が生まれる）
+//         $str .= "<tr><td>{$line}</td></tr>";
 
-// ↑作りたいものによってここに変化が生まれる
+//         // 配列に追加ver.（作りたいものによってここに変化が生まれる）
+//         $array[] = "<tr><td>{$line}</td></tr>";
 
-// ロック解除
-flock($file, LOCK_UN);
-// ↑LOCK_UNが白色で反応してないように見えるが反応してる
+//     }
+// }
+
+// // ロック解除
+// flock($file, LOCK_UN);
 
 
-// ファイルを閉じる
-fclose($file);
-// 配列の要素を空文字で連結して文字列にする
+// // ファイルを閉じる
+// fclose($file);
 
 // ↑毎回ほぼ同じ
 
 
-
-// ↓work_anketo_todo.txtに保存したデータがXAMPPブラウザに表示されるかチェック
-// ↓表示されたのでコメントアウト
-// ↓ここまでが表示されたということはここまでは合ってる
 // var_dump($array);
 // exit();
 
 
 // --------------------------
-// ↑↑↑講義と同じ内容
+// ↑↑↑講義
 // --------------------------
-
-
-
-
-
-
-
 
 
 
@@ -72,7 +55,7 @@ fclose($file);
 // 年データ取得
 // --------------------------
 
-
+$array = [];
 $years = []; // 年のデータを格納する配列
 
 // ファイルを開く
@@ -150,6 +133,13 @@ $backgroundColor = [
 // 年代ごとのデータを取得
 $decadeData = array_values($decadeCounts);
 
+// var_dump($decadeData);
+// exit();
+
+
+//※※※たろ先生フィードバック⇒無い場合０を入れる、1970年代は無いので、配列に0入れる作業必要
+
+
 // JavaScriptの円グラフのデータと色分けを設定
 echo "<script>";
 echo "let decadeData = " . json_encode($decadeData) . ";";
@@ -159,146 +149,8 @@ echo "</script>";
 
 
 
-// var_dump($decadeCounts);
-// exit();
-// ↑array(2) { ["1960年代"]=> int(4) ["2020年代"]=> int(1) }
-//と出たので、1960年代4個、2020年代1個でチェックOK
-
-
-
-// var_dump($decadeData);
-// exit();
-// ↑array(2) { [0]=> int(4) [1]=> int(1) }
-//と出たので、[0]4個、[1]1個で取得できてる
-
-
-
-
-// var_dump($decade);
-// exit();
-// ↑string(10) "2020年代"と取得できてるOK
-
-
-
-
-
-
-
-
-// --------------------------
-// ↓↓↓同じ年代を円グラフ上で同じ色にする1
-// --------------------------
-
-// 年代ごとにデータを集計する
-// $yearCounts = array_count_values($years);
-
-// // 年代ごとのデータを取得
-// $yearData = [];
-// foreach ($yearCounts as $year => $count) {
-//     $yearData[] = $count;
-// }
-
-// // 年代ごとの色分け
-// $backgroundColor = [
-//     "#BB5179", //赤
-//     "#FAFF67", //ピンク
-//     "#58A27C", //緑
-//     "#3C00FF" //青
-// ];
-
-
-
-// // 円グラフを描画するためのJavaScript
-// echo "<script>";
-// echo "let yearData = " . json_encode($yearData) . ";";
-// echo "let backgroundColor = " . json_encode($backgroundColor) . ";";
-// echo "</script>";
-
-
-
-
-// var_dump();
-// exit();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// ---------------------------------------------------
-// ジャンルデータ取得 ※一旦保留※PHPで取得した「janru」のデータをJavaScriptに渡さななのでは
-// ---------------------------------------------------
-
-// 「janru」のデータを格納する配列を定義
-// $janrus = [];
-
-// // ファイルを開く
-// $file = fopen("data/work_anketo_todo.txt", "r");
-
-// flock($file, LOCK_EX);
-
-// // ファイルからデータを取り出す
-// if ($file) {
-//     while ($line = fgets($file)) {
-//         // スペースで区切って「janru」のデータを取得
-//         $parts = explode(" ", $line);
-//         $janru = $parts[1]; // 「janru」のデータは配列の2番目にあると仮定。ん？
-//         $janrus[] = $janru;
-//     }
-// }
-
-
-// flock($file, LOCK_UN);
-
-// // ファイルを閉じる
-// fclose($file);
-
-// // PHPで取得した「janru」のデータをJavaScriptに渡す
-// echo "<script>let janrus = " . json_encode($janrus) . ";</script>";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ?>
-<!-- ↑htmlも書くなら?>を忘れるな -->
-
-
-
-
-
-
-
-
-
-
+<!-- ↑htmlも書くなら「?>」必要 -->
 
 
 
@@ -308,17 +160,25 @@ echo "</script>";
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ストリートダンスリスト（一覧画面）</title>
+    <title>筋トレ（一覧画面）</title>
 </head>
+
+<style>
+    /* 特定のidを持つ要素に対してCSSを適用する際に「#」使う */
+    #myPieChart {
+        width: 600px;
+        height: 600px;
+    }
+</style>
 
 <body>
     <fieldset>
-        <legend>ストリートダンスリスト（一覧画面）</legend>
-        <a href="work_anketo_input.php">入力画面</a>
+        <legend>筋トレ（一覧画面）</legend>
+        <a href="work_anketo_input.php">入力画面へ</a>
         <table>
             <thead>
                 <tr>
-                    <th>誕生年</th>
+                    <th>筋トレ部位</th>
                 </tr>
             </thead>
             <tbody>
@@ -338,103 +198,22 @@ echo "</script>";
     </fieldset>
 
 
-
-
-
-
-
-
-
-
-
-
-
-    <h2>円グラフ</h2>
+    <h2>筋トレ部位割合</h2>
     <canvas id="myPieChart"></canvas>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.js"></script>
 
-
-
-    <!-- -------------------------------------------------- -->
-    <!-- Chart.jsのData Labelsプラグインを使用して円グラフの中にデータを表示する -->
-    <!-- --------------------------------------------------------------------- -->
-
-    <!-- <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script> -->
-
-
-
-
-
-
-
     <script>
-        // -------------------------------------------------------------
-        // ↓↓↓同じ年代を円グラフ上で同じ色にする2※ 保留
-        // -----------------------------------------------------------
-
-
-
-        // var ctx = document.getElementById("myPieChart");
-        // var myPieChart = new Chart(ctx, {
-        //     type: 'pie',
-        //     data: {
-        //         labels: Object.keys(decadeCounts),
-        //         datasets: [{
-        //             backgroundColor: backgroundColor,
-        //             data: decadeData
-        //         }]
-        //     },
-        //     options: {
-        //         title: {
-        //             display: true,
-        //             text: '誕生年'
-        //         }
-        //     }
-        // });
-
-
-
-
-
-
-
-
-
-
-
-        // ※※※2024年が1970年代カウントされてしまっている※※※
-
-
-
-
-
-
-
-
-
-
-
-
-        // ---------------------------------------------------------
-        // 円グラフ元々の「data: [1,1,1,1]」だけを改造
-        // -------------------------------------------------
-
-
         var ctx = document.getElementById("myPieChart");
         var myPieChart = new Chart(ctx, {
             type: 'pie',
             data: {
-                labels: ["1960年代", "1970年代", "1980年代", "1990年代", "2000年代", "2010年代", "2020年代"],
+                labels: ["腕", "腹筋", "肩・胸", "太もも"],
                 datasets: [{
                     backgroundColor: [
                         "#BB5179",
                         "#FAFF67",
                         "#58A27C",
                         "#3C00FF",
-                        "#66cdaa",
-                        "#87ceeb",
-                        "#ffa500",
-
                     ],
                     data: decadeData
                     // ここ「data: decadeData」で.txtファイルの保存データの「年」と円グラフが連動した
@@ -444,69 +223,14 @@ echo "</script>";
                 }]
             },
             options: {
+                responsive: false,
+
                 title: {
                     display: true,
-                    text: '誕生年'
+                    text: '部位'
                 }
             }
         });
-
-        // ---------------------------------------------------------
-        // 円グラフ元々の「data: [1,1,1,1]」だけを改造
-        // -----------------------------------------------
-
-
-
-
-
-
-
-        // let ctx = document.getElementById("myPieChart");
-        // let myPieChart = new Chart(ctx, {
-        // type: 'pie',
-        // data: {
-        // // labels: Object.keys(yearCounts),
-        // labels: years, //年のデータをラベルとして使用
-        // datasets: [{
-
-        // // data: yearData,
-        // // backgroundColor: backgroundColor
-
-        // backgroundColor: [
-        // "#BB5179",
-        // "#FAFF67",
-        // "#58A27C",
-        // "#3C00FF"
-        // ],
-
-
-        // data:[1,1,1,1]
-
-        // // data: Array(years.length).fill(1) // 年の数だけ1を持つ配列を生成
-        // }]
-        // },
-        // options: {
-        // title: {
-        // display: true,
-        // text: '誕生年'
-        // }
-
-
-
-        // // Chart.jsのData Labelsプラグインを追加↓
-        // // plugins: {
-        // // datalabels: {
-        // // color: '#000000', // ラベルの文字色⇒黒
-        // // formatter: function(value, context) {
-        // // // ラベルに表示するデータを指定
-        // // return years[context.dataIndex];
-        // // }
-        // // }
-        // // }
-        // }
-
-
-        // });
     </script>
 
 </body>
