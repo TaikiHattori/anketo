@@ -56,71 +56,33 @@
 // --------------------------
 
 $array = [];
-$years = []; // 年のデータを格納する配列
+$parts = [];
+$partCounts = array_fill_keys($parts, 0);
 
-// ファイルを開く
 $file = fopen("data/work_anketo_todo.txt", "r");
 
 flock($file, LOCK_EX);
 
-// ファイルからデータを取り出す
 if ($file) {
     while ($line = fgets($file)) {
+        $data = explode(",", $line);
 
-        // 年の部分を取得して配列に追加
-        $parts = explode(" ", $line);
-        $year = explode("-", $parts[0])[0];
-        // ↑$partsで[年-月-日テキスト]を[年-月-日 テキスト]に分割。
-        //$yearsで[年-月-日 テキスト]の0番目である「年-月-日」のさらに中の0番目の「年」を取得
-
-        $years[] = $year;
+        //$arrayにデータを追加
+        $array[] = "<tr><td>{$line}</td></tr>";
     }
 }
 
 
 flock($file, LOCK_UN);
 
-// ファイルを閉じる
 fclose($file);
 
 
-// var_dump($years);
-// exit();
-// ↑「年」だけ取得できてるかチェックOK
-
-
-
 // // PHPで取得した年のデータをJavaScriptに渡す
-// ↓※これないと円グラフ表示されない
-// echo "<script>let years = " . json_encode($years) . ";</script>";
+// ※これないと円グラフ表示されない
 
 
 
-
-
-
-
-
-// --------------------------
-// ↓↓↓同じ年代を円グラフ上で同じ色にする2
-// --------------------------
-
-// 年代ごとにデータを集計する
-$decadeCounts = []; // 年代ごとのデータを格納する配列
-foreach ($years as $year) {
-
-    // $decade = substr($year, 0, 3) . "0年代"; // 年代を求めるver.1
-
-    // 年代を求めるver.2
-    $decade = floor($year / 10) * 10 . "年代"; // 年から年代を求める
-
-
-
-    if (!isset($decadeCounts[$decade])) {
-        $decadeCounts[$decade] = 0;
-    }
-    $decadeCounts[$decade]++;
-}
 
 // 年代ごとの色分けを定義
 $backgroundColor = [
@@ -131,10 +93,8 @@ $backgroundColor = [
 ];
 
 // 年代ごとのデータを取得
-$decadeData = array_values($decadeCounts);
+$decadeData = array_values($partCounts);
 
-// var_dump($decadeData);
-// exit();
 
 
 //※※※たろ先生フィードバック⇒無い場合０を入れる、1970年代は無いので、配列に0入れる作業必要
@@ -145,7 +105,6 @@ echo "<script>";
 echo "let decadeData = " . json_encode($decadeData) . ";";
 echo "let backgroundColor = " . json_encode($backgroundColor) . ";";
 echo "</script>";
-
 
 
 
@@ -188,8 +147,6 @@ echo "</script>";
                 これはJSではPHPの配列を扱えないので出たエラー。
                 ⇒サーバー上でJSON形式に変換する必要あり。
                 だが、implode関数でうまくいった。-->
-
-
 
                 <?= implode("", $array) ?>
                 <!-- ↑配列も使って進めたなら、implodeで文字列変換必要 -->
