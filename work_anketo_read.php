@@ -51,13 +51,18 @@
 
 
 
-// -----------------------------------------
-// 年データ取得
+// --------------------------
+// データ取得
 // --------------------------
 
 $array = [];
-$parts = [];
+$parts = ["腕", "腹筋", "肩・胸", "太もも"];
 $partCounts = array_fill_keys($parts, 0);
+
+// echo "<pre>";
+// var_dump($partCounts);
+// exit();
+// echo "</pre>";
 
 $file = fopen("data/work_anketo_todo.txt", "r");
 
@@ -65,42 +70,62 @@ flock($file, LOCK_EX);
 
 if ($file) {
     while ($line = fgets($file)) {
-        $data = explode(",", $line);
 
-        //$arrayにデータを追加
-        $array[] = "<tr><td>{$line}</td></tr>";
+        $data = explode(" ", $line);
+
+        // echo "<pre>";
+        // var_dump($line);
+        // var_dump($data[1]);
+        // exit();
+
+
+        if (isset($data[0], $data[1])) {
+            $day = trim($data[0]);
+            $part = trim($data[1]);
+
+            // var_dump($part);
+            // exit();
+
+            if (in_array($part, $parts)) {
+                $partCounts[$part]++;
+            }
+
+            // echo "<pre>";
+            // var_dump($partCounts);
+            // exit();
+
+            // $arrayにデータを追加
+            if (isset($partCounts[$part])) {
+                $array[] = "<tr><td>" . htmlspecialchars($day) . "：" . htmlspecialchars($part) . "</td></tr>";
+            }
+        }
     }
 }
 
+// echo "<pre>";
+// var_dump($array);
+// exit();
+
 
 flock($file, LOCK_UN);
-
 fclose($file);
 
 
-// // PHPで取得した年のデータをJavaScriptに渡す
-// ※これないと円グラフ表示されない
 
-
-
-
-// 年代ごとの色分けを定義
-$backgroundColor = [
-    "#BB5179", // 赤
-    "#FAFF67", // 黄色
-    "#58A27C", // 緑
-    "#3C00FF" // 青
-];
-
-// 年代ごとのデータを取得
+// データを取得
+//decadeDataには値が入るようにしないと円グラフで表示できない！
 $decadeData = array_values($partCounts);
+$backgroundColor = ["#BB5179", "#FAFF67", "#58A27C", "#3C00FF"];
 
+// echo "<pre>";
+// var_dump($decadeData);
+// exit();
 
 
 //※※※たろ先生フィードバック⇒無い場合０を入れる、1970年代は無いので、配列に0入れる作業必要
 
 
-// JavaScriptの円グラフのデータと色分けを設定
+// PHPで取得したデータをJSの変数として使えるようにする
 echo "<script>";
 echo "let decadeData = " . json_encode($decadeData) . ";";
 echo "let backgroundColor = " . json_encode($backgroundColor) . ";";
@@ -123,7 +148,7 @@ echo "</script>";
 </head>
 
 <style>
-    /* 特定のidを持つ要素に対してCSSを適用する際に「#」使う */
+    /* 特定のidを持つ要素に対して*/
     #myPieChart {
         width: 600px;
         height: 600px;
@@ -141,42 +166,28 @@ echo "</script>";
                 </tr>
             </thead>
             <tbody>
-                <!-- json_encode($array)  -->
-                <!-- ↑「$array」だけを?で挟んで書くと「Warning: Array to string conversion in C:\Users\Taiki Hattori\Desktop\xampp\htdocs\G'sPHP講義\06_php01_sample\work_anketo_read.php on line 81
-                Array」というエラーが出る。
-                これはJSではPHPの配列を扱えないので出たエラー。
-                ⇒サーバー上でJSON形式に変換する必要あり。
-                だが、implode関数でうまくいった。-->
-
                 <?= implode("", $array) ?>
-                <!-- ↑配列も使って進めたなら、implodeで文字列変換必要 -->
             </tbody>
         </table>
     </fieldset>
 
 
-    <h2>筋トレ部位割合</h2>
+    <h2>筋トレ部位日数</h2>
     <canvas id="myPieChart"></canvas>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.js"></script>
 
     <script>
         var ctx = document.getElementById("myPieChart");
+
+        console.log(decadeData);
+
         var myPieChart = new Chart(ctx, {
             type: 'pie',
             data: {
                 labels: ["腕", "腹筋", "肩・胸", "太もも"],
                 datasets: [{
-                    backgroundColor: [
-                        "#BB5179",
-                        "#FAFF67",
-                        "#58A27C",
-                        "#3C00FF",
-                    ],
+                    backgroundColor: backgroundColor,
                     data: decadeData
-                    // ここ「data: decadeData」で.txtファイルの保存データの「年」と円グラフが連動した
-                    // ↑GPTで出なかった
-
-
                 }]
             },
             options: {
