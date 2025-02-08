@@ -115,7 +115,9 @@ fclose($file);
 // データを取得
 //decadeDataには値が入るようにしないと円グラフで表示できない！
 $decadeData = array_values($partCounts);
-$backgroundColor = ["#BB5179", "#FAFF67", "#58A27C", "#3C00FF"];
+$backgroundColor = ["#BB5179", "#daa520", "#58A27C", "#3C00FF"];
+//$decadeDataにnullデータも入っているので、それは円グラフに表示不要なので除外
+$labels = array_keys($partCounts);
 
 // echo "<pre>";
 // var_dump($decadeData);
@@ -129,6 +131,7 @@ $backgroundColor = ["#BB5179", "#FAFF67", "#58A27C", "#3C00FF"];
 echo "<script>";
 echo "let decadeData = " . json_encode($decadeData) . ";";
 echo "let backgroundColor = " . json_encode($backgroundColor) . ";";
+echo "let labels = " . json_encode($labels) . ";";
 echo "</script>";
 
 
@@ -175,29 +178,47 @@ echo "</script>";
     <h2>筋トレ部位日数</h2>
     <canvas id="myPieChart"></canvas>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.js"></script>
+    <!-- ％用プラグインを読み込む -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.7.0/dist/chartjs-plugin-datalabels.min.js"></script>
 
     <script>
         var ctx = document.getElementById("myPieChart");
 
         console.log(decadeData);
 
+        // データをフィルタリングして0の値を持つデータポイントを除外
+        let filteredData = decadeData.filter(value => value > 0);
+        let filteredBackgroundColor = backgroundColor.filter((color, index) => decadeData[index] > 0);
+        let filteredLabels = labels.filter((label, index) => decadeData[index] > 0);
+
         var myPieChart = new Chart(ctx, {
             type: 'pie',
             data: {
-                labels: ["腕", "腹筋", "肩・胸", "太もも"],
+                labels: filteredLabels,
                 datasets: [{
-                    backgroundColor: backgroundColor,
-                    data: decadeData
+                    backgroundColor: filteredBackgroundColor,
+                    data: filteredData
                 }]
             },
             options: {
                 responsive: false,
+                plugins: {
+                    datalabels: {
+                        formatter: (value, ctx) => {
+                            let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                            let percentage = (value * 100 / sum) + "%";
+                            return percentage;
+                        },
+                        color: "#fff",
+                    }
+                },
 
                 title: {
                     display: true,
                     text: '部位'
                 }
-            }
+            },
+            plugins: [ChartDataLabels]
         });
     </script>
 
